@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">mipt-android</string>
+    <string name="food_ninja">FoodNinja</string>
+    <string name="slogan">Deliver Favorite Food</string>
+    <string name="sign_up_title">Sign Up For Free</string>
+    <string name="login_field">Login</string>
+    <string name="email_field">Email</string>
+    <string name="password_field">Password</string>
+    <string name="sign_in_agreement1">Keep Me Signed In</string>
+    <string name="sign_in_agreement2">Email Me About Special Pricing</string>
+    <string name="create_account">Create Account</string>
+    <string name="have_account">already have an account?</string>
 </resources>
