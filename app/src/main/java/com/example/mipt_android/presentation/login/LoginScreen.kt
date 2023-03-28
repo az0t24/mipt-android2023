@@ -1,23 +1,21 @@
-package com.example.mipt_android.ui
+package com.example.mipt_android.presentation.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -26,11 +24,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mipt_android.R
-import com.example.mipt_android.ui.theme.MiptandroidTheme
+import com.example.mipt_android.app.theme.MiptandroidTheme
+import kotlin.reflect.KFunction1
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    viewModel: LoginViewModel = hiltViewModel()
+) {
     Box {
         Image(
             painter = painterResource(id = R.drawable.pattern),
@@ -38,12 +40,16 @@ fun LoginScreen() {
             modifier = Modifier.fillMaxSize()
         )
 
-        FrontDetails()
+        FrontDetails(viewModel)
     }
 }
 
 @Composable
-fun FrontDetails() {
+fun FrontDetails(
+    viewModel: LoginViewModel
+) {
+    val uiState = viewModel.uiState.collectAsState().value
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -82,46 +88,74 @@ fun FrontDetails() {
                 .fillMaxWidth()
         ) {
             InputLoginField(
+                event = { viewModel.onTriggerEvent(LoginEvent.LoginInput(it)) },
+                uiState = uiState.login,
                 title = stringResource(id = R.string.login_field),
                 leadingIcon = Icons.Rounded.Person
             )
             Spacer(modifier = Modifier.heightIn(12.dp))
             InputLoginField(
+                event = { viewModel.onTriggerEvent(LoginEvent.EmailInput(it)) },
+                uiState = uiState.email,
                 title = stringResource(id = R.string.email_field),
                 leadingIcon = Icons.Rounded.Email
             )
             Spacer(modifier = Modifier.heightIn(12.dp))
             InputLoginField(
+                event = { viewModel.onTriggerEvent(LoginEvent.PasswordInput(it)) },
+                uiState = uiState.password,
                 title = stringResource(id = R.string.password_field),
                 leadingIcon = Icons.Rounded.Lock,
                 trailingIcon = Icons.Rounded.Info
             )
             Spacer(modifier = Modifier.heightIn(20.dp))
-            CheckOption(text = stringResource(id = R.string.sign_in_agreement1))
+            CheckOption(
+                event = { viewModel.onTriggerEvent(LoginEvent.ChangeKeepingAgreement) },
+                uiState = uiState.keepingAgreement,
+                text = stringResource(id = R.string.sign_in_agreement1)
+            )
             Spacer(modifier = Modifier.heightIn(12.dp))
-            CheckOption(text = stringResource(id = R.string.sign_in_agreement2))
+            CheckOption(
+                event = { viewModel.onTriggerEvent(LoginEvent.ChangeAdvertAgreement) },
+                uiState = uiState.advertAgreement,
+                text = stringResource(id = R.string.sign_in_agreement2)
+            )
             Spacer(modifier = Modifier.heightIn(12.dp))
-            SignIn()
+            SignIn(
+                onCreateAccount = { viewModel.onTriggerEvent(LoginEvent.CreateAccount) },
+                onAlreadyHaveAccount = { viewModel.onTriggerEvent(LoginEvent.AlreadyHaveAccount) }
+            )
         }
     }
 }
 
 @Composable
 fun CheckOption(
+    modifier: Modifier = Modifier,
+    event: () -> Unit,
+    uiState: Boolean,
     text: String
 ) {
     Row() {
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = event,
             modifier = Modifier
                 .padding(end = 8.dp)
                 .size(22.dp)
         ) {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle,
-                contentDescription = "Accepted",
-                tint = colorResource(id = R.color.main_color)
-            )
+            if (uiState)
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = "Accepted",
+                    tint = colorResource(id = R.color.main_color)
+                )
+
+            else
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = "Not accepted",
+                    tint = colorResource(id = R.color.gray_2)
+                )
         }
         Text(
             text = text
@@ -131,13 +165,16 @@ fun CheckOption(
 
 @Composable
 fun InputLoginField(
+    modifier: Modifier = Modifier,
+    event: (String) -> Unit,
     title: String,
+    uiState: String,
     leadingIcon: ImageVector,
     trailingIcon: ImageVector? = null
 ) {
     OutlinedTextField(
-        value = "",
-        onValueChange = {},
+        value = uiState,
+        onValueChange = event,
         leadingIcon = {
             Icon(
                 imageVector = leadingIcon,
@@ -175,8 +212,8 @@ fun InputLoginField(
 @Composable
 fun SignIn(
     modifier: Modifier = Modifier,
-    onCreateAccount: () -> Unit = {},
-    onAlreadyHaveAccount: () -> Unit = {},
+    onCreateAccount: () -> Unit,
+    onAlreadyHaveAccount: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

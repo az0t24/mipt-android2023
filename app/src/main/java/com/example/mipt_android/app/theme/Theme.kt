@@ -1,4 +1,4 @@
-package com.example.mipt_android.ui.theme
+package com.example.mipt_android.app.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
