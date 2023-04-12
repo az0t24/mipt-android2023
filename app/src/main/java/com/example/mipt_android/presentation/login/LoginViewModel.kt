@@ -22,19 +22,18 @@ class LoginViewModel
             is LoginEvent.PasswordInput -> onPasswordUpdate(eventType.value)
             is LoginEvent.ChangeAdvertAgreement -> onChangeAdvertAgreement()
             is LoginEvent.ChangeKeepingAgreement -> onChangeKeepingAgreement()
-            is LoginEvent.CreateAccount -> onCreateAccount()
+            is LoginEvent.CreateAccount -> onCreateAccount(eventType.action)
             is LoginEvent.AlreadyHaveAccount -> onAlreadyHaveAccount()
         }
     }
 
     private fun onAlreadyHaveAccount() {
         // Навигация на другой экран
-        TODO("Not yet implemented")
     }
 
-    private fun onCreateAccount() {
-        // Проверка данных и переход на другой экран
-        TODO("Not yet implemented")
+    private fun onCreateAccount(action: () -> Unit) {
+        // Check data and if it is OK:
+        action()
     }
 
     private fun onChangeKeepingAgreement() {

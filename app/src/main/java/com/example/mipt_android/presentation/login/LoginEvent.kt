@@ -6,6 +6,6 @@ sealed class LoginEvent() {
     data class PasswordInput(val value: String) : LoginEvent()
     object ChangeKeepingAgreement : LoginEvent()
     object ChangeAdvertAgreement : LoginEvent()
-    object CreateAccount : LoginEvent()
+    data class CreateAccount(val action: () -> Unit) : LoginEvent()
     object AlreadyHaveAccount : LoginEvent()
 }

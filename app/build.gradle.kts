@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -15,6 +17,15 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments.putAll(mapOf(
+                    "room.schemaLocation" to "$projectDir/schemas.toString()",
+                    "room.incremental" to "true"
+                ))
+            }
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -72,6 +83,26 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44.2")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    // Ktor
+    implementation("io.ktor:ktor-client-core:${rootProject.extra["ktorVersion"]}")
+    implementation("io.ktor:ktor-client-cio:${rootProject.extra["ktorVersion"]}")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:${rootProject.extra["ktorVersion"]}")
+    implementation("io.ktor:ktor-client-logging:${rootProject.extra["ktorVersion"]}")
+    implementation("io.ktor:ktor-client-content-negotiation:${rootProject.extra["ktorVersion"]}")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("io.coil-kt:coil:2.2.2")
+    implementation("io.coil-kt:coil-svg:2.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+
+    // Room
+    implementation("androidx.room:room-runtime:${rootProject.extra["roomVersion"]}")
+    annotationProcessor("androidx.room:room-compiler:${rootProject.extra["roomVersion"]}")
+    ksp("androidx.room:room-compiler:${rootProject.extra["roomVersion"]}")
+    implementation("androidx.room:room-ktx:${rootProject.extra["roomVersion"]}")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:${rootProject.extra["navigationVersion"]}")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

@@ -31,7 +31,8 @@ import kotlin.reflect.KFunction1
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    onSuccessAuth: () -> Unit
 ) {
     Box {
         Image(
@@ -40,13 +41,14 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        FrontDetails(viewModel)
+        FrontDetails(viewModel, onSuccessAuth)
     }
 }
 
 @Composable
 fun FrontDetails(
-    viewModel: LoginViewModel
+    viewModel: LoginViewModel,
+    onSuccessAuth: () -> Unit,
 ) {
     val uiState = viewModel.uiState.collectAsState().value
 
@@ -122,7 +124,7 @@ fun FrontDetails(
             )
             Spacer(modifier = Modifier.heightIn(12.dp))
             SignIn(
-                onCreateAccount = { viewModel.onTriggerEvent(LoginEvent.CreateAccount) },
+                onCreateAccount = { viewModel.onTriggerEvent(LoginEvent.CreateAccount(onSuccessAuth)) },
                 onAlreadyHaveAccount = { viewModel.onTriggerEvent(LoginEvent.AlreadyHaveAccount) }
             )
         }
@@ -249,6 +251,6 @@ fun SignIn(
 @Composable
 fun PreviewLogin() {
     MiptandroidTheme {
-        LoginScreen()
+        LoginScreen(onSuccessAuth = {})
     }
 }

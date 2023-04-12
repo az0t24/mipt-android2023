@@ -10,4 +10,7 @@
     <string name="sign_in_agreement2">Email Me About Special Pricing</string>
     <string name="create_account">Create Account</string>
     <string name="have_account">already have an account?</string>
+
+    <string name="login_screen">login screen</string>
+    <string name="restaurant_screen">restaurant screen</string>
 </resources>
