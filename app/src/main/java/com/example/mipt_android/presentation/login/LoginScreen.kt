@@ -25,15 +25,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.mipt_android.R
 import com.example.mipt_android.app.theme.MiptandroidTheme
-import kotlin.reflect.KFunction1
+import com.example.mipt_android.presentation.navigation.FoodNinjaScreen
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onSuccessAuth: () -> Unit
+    navController: NavController,
 ) {
+    val onSuccessAuth = stringResource(FoodNinjaScreen.Restaurant.title)
+
     Box {
         Image(
             painter = painterResource(id = R.drawable.pattern),
@@ -41,7 +45,10 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        FrontDetails(viewModel, onSuccessAuth)
+        FrontDetails(
+            viewModel,
+            onSuccessAuth = { navController.navigate(onSuccessAuth) }
+        )
     }
 }
 
@@ -251,6 +258,6 @@ fun SignIn(
 @Composable
 fun PreviewLogin() {
     MiptandroidTheme {
-        LoginScreen(onSuccessAuth = {})
+        LoginScreen(navController = rememberNavController())
     }
 }

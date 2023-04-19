@@ -11,10 +11,10 @@ data class CatalogResponse(
 
 @Serializable
 data class RemoteRestaurant(
-    val id: Int,
-    val name: String,
-    val deliveryTime: String,
-    val image: String
+    val id: Int = 0,
+    val name: String = "",
+    val deliveryTime: String = "",
+    val image: String = ""
 )
 
 @Serializable

@@ -1,12 +1,15 @@
 package com.example.mipt_android.presentation.navigation
 
 import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.example.mipt_android.R
 
-enum class FoodNinjaScreen(@StringRes val title: Int) {
-    Login(title = R.string.login_screen),
-    Restaurant(title = R.string.restaurant_screen),
+sealed class FoodNinjaScreen(@StringRes val title: Int) {
+    object Login : FoodNinjaScreen(title = R.string.login_screen)
+    object Restaurant : FoodNinjaScreen(title = R.string.restaurant_screen)
+    data class RestaurantDetail(val id: Int) : FoodNinjaScreen(title = R.string.restaurant_screen) {
+        @Composable
+        fun getRoute() = stringResource(title) + "/" + id.toString()
+    }
 }

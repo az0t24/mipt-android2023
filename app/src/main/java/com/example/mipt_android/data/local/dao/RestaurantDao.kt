@@ -8,8 +8,8 @@ import com.example.mipt_android.data.model.local.RestaurantEntity
 
 @Dao
 interface RestaurantDao {
-    @Query("SELECT * FROM restaurants")
-    fun getAll(): List<RestaurantEntity>
+    @Query("SELECT * FROM restaurants WHERE rowid = :id")
+    fun getRestaurant(id: Int): List<RestaurantEntity>
 
     @Query("SELECT * FROM restaurants WHERE type = 'nearest'")
     fun getNearest(): List<RestaurantEntity>

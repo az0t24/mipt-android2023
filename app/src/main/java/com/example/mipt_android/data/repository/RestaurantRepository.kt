@@ -5,7 +5,7 @@ import com.example.mipt_android.data.local.dao.RestaurantDao
 import com.example.mipt_android.data.model.extensions.toRemoteRestaurant
 import com.example.mipt_android.data.model.extensions.toRestaurantEntity
 import com.example.mipt_android.data.model.remote.CatalogResponse
-import com.example.mipt_android.data.model.remote.RemoteCommercial
+import com.example.mipt_android.data.model.remote.RemoteRestaurant
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -20,39 +20,46 @@ class RestaurantRepository
     private val restaurantDao: RestaurantDao
 ) {
 
-    suspend fun fetchCatalog(): Flow<CatalogResponse> {
-        return flow {
-            val nearestCache = restaurantDao.getNearest()
-            val popularCache = restaurantDao.getPopular()
-            if (nearestCache.isNotEmpty() || popularCache.isNotEmpty()) {
-                emit(
-                    CatalogResponse(
-                        nearest = nearestCache.map { it.toRemoteRestaurant() },
-                        popular = popularCache.map { it.toRemoteRestaurant() },
-                        commercial = null
-                    )
+    suspend fun getRestaurant(id: Int): Flow<RemoteRestaurant> = flow {
+        val restaurant = restaurantDao.getRestaurant(id)
+        if (restaurant.size == 1) {
+            emit(restaurant.first().toRemoteRestaurant())
+        } else {
+            Log.e("GetRestaurant", "No restaurant with such ID")
+        }
+    }
+
+    suspend fun fetchCatalog(): Flow<CatalogResponse> = flow {
+        val nearestCache = restaurantDao.getNearest()
+        val popularCache = restaurantDao.getPopular()
+        if (nearestCache.isNotEmpty() || popularCache.isNotEmpty()) {
+            emit(
+                CatalogResponse(
+                    nearest = nearestCache.map { it.toRemoteRestaurant() },
+                    popular = popularCache.map { it.toRemoteRestaurant() },
+                    commercial = null
                 )
-            }
+            )
+        }
 
-            try {
-                val response = httpClient.request("http://195.2.84.138:8081/catalog") {
-                    method = HttpMethod.Get
-                }.body<CatalogResponse>()
+        try {
+            val response = httpClient.request("http://195.2.84.138:8081/catalog") {
+                method = HttpMethod.Get
+            }.body<CatalogResponse>()
 
-                Log.d("fetch", "downloading is done")
+            Log.d("fetch", "downloading is done")
 
-                restaurantDao.insertAll(*response.nearest.map {
-                    it.toRestaurantEntity("nearest")
-                }.toTypedArray())
+            restaurantDao.insertAll(*response.nearest.map {
+                it.toRestaurantEntity("nearest")
+            }.toTypedArray())
 
-                restaurantDao.insertAll(*response.nearest.map {
-                    it.toRestaurantEntity("popular")
-                }.toTypedArray())
+            restaurantDao.insertAll(*response.nearest.map {
+                it.toRestaurantEntity("popular")
+            }.toTypedArray())
 
-                emit(response)
-            } catch (e: Exception) {
-                Log.e("Fetch", "$e")
-            }
+            emit(response)
+        } catch (e: Exception) {
+            Log.e("Fetch", "$e")
         }
     }
 }
